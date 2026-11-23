@@ -67,6 +67,12 @@ jobs:
           file /tmp/mate50_perf_ip_classifier_arm64 | grep 'ARM aarch64'
           ! readelf -l /tmp/mate50_perf_ip_classifier_arm64 | grep INTERP
 
+      - name: Compile DCO Perf canonical IP range classifier
+        run: |
+          clang --target=aarch64-linux-android31 -ffreestanding -nostdlib -static -fno-stack-protector -O2 -fno-builtin -fno-pic -fuse-ld=lld -Wl,-e,_start -Wl,-z,max-page-size=4096 -Wl,--build-id=none -Wall -Wextra -Werror tools/kernel_layout/mate50_perf_ip_range_classifier.c -o /tmp/mate50_perf_ip_range_arm64
+          file /tmp/mate50_perf_ip_range_arm64 | grep 'ARM aarch64'
+          ! readelf -l /tmp/mate50_perf_ip_range_arm64 | grep INTERP
+
       - name: JDK 21
         uses: actions/setup-java@v6
         with:

@@ -86,6 +86,27 @@ int main() {
         assert(addresses.phys_offset == P0_PHYS_OFFSET);
     }
 
+    /* The exact Huawei DCO kernel is not allowed to inherit the compiled
+     * Qualcomm DRAM assumption. The same image with an explicitly verified
+     * physical base may proceed; the existing generic QCOM tests above are
+     * intentionally unchanged. */
+    {
+        auto transport = make_transport(0x1000, 0xa8000000ULL, std::nullopt);
+        transport.uname_r = "5.10.136-gfdd4fb7e74b6-dirty";
+        ghostlock::profile::TargetProfile profile(transport);
+        ResolvedAddresses addresses;
+        errno = 0;
+        assert(addresses.init_for_soc(&profile, SocFamily::Qcom) == -1);
+        assert(errno == EINVAL);
+    }
+    {
+        auto transport = make_transport(0x1000, 0xa8000000ULL, 0x80000000ULL);
+        transport.uname_r = "5.10.136-gfdd4fb7e74b6-dirty";
+        ghostlock::profile::TargetProfile profile(transport);
+        ResolvedAddresses addresses;
+        assert(addresses.init_for_soc(&profile, SocFamily::Qcom) == 0);
+        assert(addresses.phys_offset == 0x80000000ULL);
+    }
     std::puts("address_space_test: ok");
     return 0;
 }

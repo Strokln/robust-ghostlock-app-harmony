@@ -7,6 +7,7 @@ on:
       - document
       - ci/harmony-apk
       - 'feat/**'
+      - 'fix/**'
     paths:
       - '.github/workflows/harmony-apk.yml'
       - 'app/**'

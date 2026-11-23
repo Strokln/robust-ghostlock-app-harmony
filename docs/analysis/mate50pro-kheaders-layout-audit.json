@@ -1,0 +1,61 @@
+{
+  "schema": "header-layout-audit-v1",
+  "status": "research-only",
+  "exploit_ready": false,
+  "target": {
+    "model": "DCO-AL00",
+    "device": "HWDCO",
+    "kernel": "5.10.136-gfdd4fb7e74b6-dirty"
+  },
+  "provenance": {
+    "boot_sha256": "96344a91f72798adfb8e08a7d0a2725420f97c30ef29cf828a2af2255241d4cf",
+    "kheaders_sha256": "438a08fe8e793c490567b578d742bbe62fefb8638ccc780872bb4de8e2ec8f79",
+    "kernel_compiler": "Android Clang 12.0.5",
+    "measurement_compiler": "Clang 17.0.0",
+    "measurement_method": "arm64 clang offsetof/sizeof assembly",
+    "vendor_stub_caveat": true
+  },
+  "task_struct": {
+    "size": 4992,
+    "prio": 332,
+    "normal_prio": 340,
+    "sched_task_group": 1040,
+    "pi_lock": 2188,
+    "pi_waiters": 2208,
+    "pi_top_task": 2224,
+    "pi_blocked_on": 2232,
+    "pid": 1504,
+    "tgid": 1508,
+    "atomic_flags": 1448,
+    "real_cred": 1944,
+    "cred": 1952,
+    "comm": 1968,
+    "tasks": 1248,
+    "seccomp": 2152
+  },
+  "cred": {
+    "size": 168,
+    "usage_offset": 0,
+    "usage_size": 4,
+    "uid_offset": 4,
+    "cap_inheritable_offset": 40,
+    "cap_permitted_offset": 48,
+    "cap_effective_offset": 56,
+    "cap_bset_offset": 64,
+    "cap_ambient_offset": 72,
+    "security_offset": 120,
+    "kernel_cap_t_size": 8
+  },
+  "profile_validation": {
+    "original_task_field_matches": 7,
+    "previously_missing_task_fields": 8,
+    "original_null_field_count": 24,
+    "still_unverified": [
+      "exploit-specific cred template and reference repair values",
+      "runtime kernel mapping and physical offset",
+      "selected GhostLock route on DCO-AL00",
+      "privilege escalation success or memory integrity"
+    ]
+  },
+  "warning": "Do not import as a GhostLock profile or execute native exploit using these data alone."
+}

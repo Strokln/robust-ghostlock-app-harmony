@@ -498,4 +498,11 @@
     <string name="gen_retry">Start over</string>
     <string name="gen_source_hint">The required images are determined after you choose.</string>
     <string name="gen_local_summary">boot.img · ota.zip · vendor_boot · dtbo</string>
+    <!-- Huawei-specific identity notice. Informational; never a root support verdict. -->
+    <string name="mate50_preflight_title">Huawei Mate 50 Pro — research preflight</string>
+    <string name="mate50_preflight_exact">Firmware and kernel match the previously examined DCO-AL00 image. This verifies identity only, not safe exploitation.</string>
+    <string name="mate50_preflight_mismatch">Firmware or kernel differs from the offline study. Do not reuse offsets or profiles from a different build.</string>
+    <string name="mate50_preflight_profile_present">A profile is loaded. It has not been validated on this Huawei device.</string>
+    <string name="mate50_preflight_profile_missing">No matching profile is loaded. The app can analyze an image from this exact build via Generate profile.</string>
+    <string name="mate50_preflight_warning">Read-only check. The CVE analysis does not establish root success; do not run an unverified route on a daily-use phone.</string>
 </resources>

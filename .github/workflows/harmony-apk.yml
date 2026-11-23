@@ -6,6 +6,7 @@ on:
     branches:
       - document
       - ci/harmony-apk
+      - 'feat/**'
     paths:
       - '.github/workflows/harmony-apk.yml'
       - 'app/**'
@@ -72,6 +73,23 @@ jobs:
 
       - name: Install ONDK Rust toolchain
         run: rustup toolchain link ondk '${{ runner.temp }}/ondk/toolchains/rust'
+
+      - name: Run required Mate 50 Pro preflight tests
+        env:
+          ONDK_HOME: ${{ runner.temp }}/ondk
+          ANDROID_NDK_HOME: ${{ runner.temp }}/ondk
+          ANDROID_NDK_ROOT: ${{ runner.temp }}/ondk
+        run: ./gradlew :app:testDebugUnitTest --tests com.sesame.app.ui.Mate50PreflightTest --no-daemon --stacktrace
+
+      # Upstream AnchorMergeProbeTest requires external/port/<release>.conf,
+      # a machine-local fixture absent from GitHub clean checkouts.
+      - name: Upstream JVM suite (informational; external fixture missing)
+        continue-on-error: true
+        env:
+          ONDK_HOME: ${{ runner.temp }}/ondk
+          ANDROID_NDK_HOME: ${{ runner.temp }}/ondk
+          ANDROID_NDK_ROOT: ${{ runner.temp }}/ondk
+        run: ./gradlew :app:testDebugUnitTest --no-daemon
 
       - name: Build APK (debug signing; no signing secrets)
         env:

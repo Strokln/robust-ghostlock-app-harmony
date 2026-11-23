@@ -1,5 +1,6 @@
 package com.sesame.app.ui
 
+import android.os.Build
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -96,6 +97,17 @@ internal fun HomeScreen(
             }
             Spacer(Modifier.height(12.dp))
             StatusCard(copy)
+            val mate50 = Mate50Preflight.inspect(
+                model = Build.MODEL.orEmpty(),
+                device = Build.DEVICE.orEmpty(),
+                buildDisplay = Build.DISPLAY.orEmpty(),
+                kernelRelease = state.device.kernelRelease,
+                profilePresent = state.support.hasProfile,
+            )
+            if (mate50 != null) {
+                Spacer(Modifier.height(12.dp))
+                Mate50PreflightCard(mate50)
+            }
             /* One route entry: the sheet inside holds the backend banners
              * (GhostLock with syscall / carrier / DirtyFrag, and the timer). */
             val showRouteEntry = state.support.routeCandidates.size > 1 ||
@@ -164,6 +176,53 @@ internal fun HomeScreen(
                 .padding(horizontal = 16.dp, vertical = 8.dp)
                 .height(52.dp),
         )
+    }
+}
+
+/**
+ * A strictly informational preflight panel. It makes no attempt to inspect or
+ * modify kernel state, select a route, or call the native exploit executable.
+ */
+@Composable
+private fun Mate50PreflightCard(result: Mate50Preflight.Result) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        insideMargin = PaddingValues(16.dp),
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text(
+                text = stringResource(R.string.mate50_preflight_title),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+                text = stringResource(
+                    if (result.sameBuildAsOfflineStudy) {
+                        R.string.mate50_preflight_exact
+                    } else {
+                        R.string.mate50_preflight_mismatch
+                    },
+                ),
+                fontSize = 14.sp,
+                color = secondaryText(),
+            )
+            Text(
+                text = stringResource(
+                    if (result.profilePresent) {
+                        R.string.mate50_preflight_profile_present
+                    } else {
+                        R.string.mate50_preflight_profile_missing
+                    },
+                ),
+                fontSize = 14.sp,
+                color = secondaryText(),
+            )
+            Text(
+                text = stringResource(R.string.mate50_preflight_warning),
+                fontSize = 13.sp,
+                color = secondaryText(),
+            )
+        }
     }
 }
 

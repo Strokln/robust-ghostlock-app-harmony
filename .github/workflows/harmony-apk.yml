@@ -8,6 +8,7 @@ on:
       - ci/harmony-apk
       - 'feat/**'
       - 'fix/**'
+      - 'tools/**'
     paths:
       - '.github/workflows/harmony-apk.yml'
       - 'app/**'
@@ -39,6 +40,9 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
+
+      - name: Offline P50-to-Mate50 compatibility gate tests
+        run: python3 -m unittest discover -s tools/kernel_layout -p 'test_p50_mate50_gate.py' -v
 
       - name: JDK 21
         uses: actions/setup-java@v6

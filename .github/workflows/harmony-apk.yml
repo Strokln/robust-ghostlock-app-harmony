@@ -55,6 +55,12 @@ jobs:
           clang --target=aarch64-linux-android31 -fsyntax-only -ffreestanding -nostdlib tools/kernel_layout/mate50_perf_event_probe.c
           bash -n tools/kernel_layout/build_mate50_perf_probe.sh
 
+      - name: Compile DCO perf sampling classifier (no device, no root)
+        run: |
+          clang --target=aarch64-linux-android31 -ffreestanding -nostdlib -static -fno-stack-protector -O2 -fno-builtin -fno-pic -fuse-ld=lld -Wl,-e,_start -Wl,-z,max-page-size=4096 -Wl,--build-id=none -Wall -Wextra -Werror tools/kernel_layout/mate50_perf_sampling_classifier.c -o /tmp/mate50_perf_classifier_aarch64
+          file /tmp/mate50_perf_classifier_aarch64 | grep 'ARM aarch64'
+          ! readelf -l /tmp/mate50_perf_classifier_aarch64 | grep INTERP
+
       - name: JDK 21
         uses: actions/setup-java@v6
         with:

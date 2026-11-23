@@ -41,6 +41,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Offline Mate50 kallsyms syntax and fail-closed tests
+        run: |
+          python3 -m unittest discover -s tools/kernel_layout -p 'test_mate50_kallsyms_extract.py' -v
+          python3 -m py_compile tools/kernel_layout/mate50_make_sym_elf.py
+
       - name: Offline P50-to-Mate50 compatibility gate tests
         run: python3 -m unittest discover -s tools/kernel_layout -p 'test_p50_mate50_gate.py' -v
 

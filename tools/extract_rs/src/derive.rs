@@ -1612,13 +1612,12 @@ pub fn derive_pselect_layout(
         .sum();
     let futex_waiter = -(futex_sum as i64) + *waiter_local as i64;
     let delta = futex_waiter - pselect_word0;
-    // The strip length depends on the waiter shape. Without BTF, choose
-    // the release-family heuristic, NOT unconditional compact=true: the
-    // latter silently misclassifies BTF-less Linux 6.6+ images.
-    // This remains labelled as a heuristic until machine-code corroboration.
+    // The strip length depends on the waiter shape: the 6.6+ rt_waiter_node
+    // pair stamps two words beyond the compact strip. A BTF-less image is the
+    // 5.10 codegen template, which is compact.
     let compact_waiter = btf
         .and_then(crate::layout::waiter_is_compact)
-        .unwrap_or_else(|| crate::family::is_compact_waiter_family(release));
+        .unwrap_or(true);
     let shift = pselect_shift_from_delta(delta, compact_waiter).map_err(|reason| {
         ExtractError::infeasible_with(
             reason,

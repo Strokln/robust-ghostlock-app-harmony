@@ -42,6 +42,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: DCO profile evidence reconciliation tests
+        run: |
+          python3 -m unittest discover -s tools/kernel_layout -p 'test_mate50_reconcile_profile.py' -v
+          python3 -m py_compile tools/kernel_layout/mate50_reconcile_profile.py
+
       - name: Offline Mate50 kallsyms syntax and fail-closed tests
         run: |
           python3 -m unittest discover -s tools/kernel_layout -p 'test_mate50_kallsyms_extract.py' -v

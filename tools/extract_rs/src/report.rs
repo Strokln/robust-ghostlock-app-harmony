@@ -948,6 +948,8 @@ mod tests {
         });
         assert!(!out.contains("include"));
         assert!(out.contains("kernel_phys_load = 1073741824"));
+        assert!(out.contains("# profile_readiness: INCOMPLETE; unresolved=kernel_phys_offset"));
+        assert!(out.contains("NOT VERIFIED FOR ROOT"));
         assert!(out.contains("route {\n  select_stack {\n    waiter_shift = -2\n  }\n}"));
         assert!(out.contains("collisions = 4"));
         assert!(!out.contains("mm_struct_sz"));

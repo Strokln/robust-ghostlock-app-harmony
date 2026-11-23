@@ -1445,7 +1445,15 @@ fn run(cli: &Cli) -> Result<i32> {
             });
             match derived_cred {
                 Some(cred) => cred,
-                None if series_matched => {
+                None if series_matched
+                    || release.as_deref() == Some("5.10.136-gfdd4fb7e74b6-dirty") =>
+                {
+                    // Huawei DCO-AL00 uses a vendor release name without the
+                    // android12-9 GKI suffix. Image-based derivation below is
+                    // nevertheless applicable: cap runs and reference pointers
+                    // are checked against this image's init_cred bytes.
+                    // This is NOT a permission to apply a GKI template when
+                    // evidence from init_cred is absent.
                     let init_cred_off = symbol_offsets.get("off_init_cred").copied().flatten();
                     let derived = init_cred_off.and_then(|offset| {
                         structs::derive_cred_layout_5_10(&boot.kernel, offset, base)
@@ -1469,9 +1477,17 @@ fn run(cli: &Cli) -> Result<i32> {
                             Some(cred)
                         }
                         None => {
-                            let fallback = init_cred_off.and_then(|offset| {
-                                family::cred_from_image(&boot.kernel, offset, base)
-                            });
+                            // A firmware without the matching GKI series
+                            // must not silently inherit the GKI pointer
+                            // template. Only image-derived Huawei facts are
+                            // eligible for its profile.
+                            let fallback = if series_matched {
+                                init_cred_off.and_then(|offset| {
+                                    family::cred_from_image(&boot.kernel, offset, base)
+                                })
+                            } else {
+                                None
+                            };
                             if fallback.is_some() {
                                 eprintln!(
                                     "warning: cred layout derivation failed; using the \

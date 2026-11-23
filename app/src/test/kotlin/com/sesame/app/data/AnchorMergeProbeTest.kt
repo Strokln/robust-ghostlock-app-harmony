@@ -3,6 +3,7 @@ package com.sesame.app.data
 import com.sesame.app.data.profile.ProfileMerger
 import java.io.File
 import org.junit.Assert.assertEquals
+import org.junit.Assume.assumeTrue
 import org.junit.Test
 
 /**
@@ -17,20 +18,25 @@ class AnchorMergeProbeTest {
     private val release = "5.10.236-android12-9-00003-gfb24cf99ad97-ab14313284"
     private val anchor = 44279184L
 
-    private fun locateConf(): File {
+    private fun locateConf(): File? {
         var dir: File? = File(System.getProperty("user.dir")).absoluteFile
         while (dir != null) {
             val f = File(dir, "external/port/$release.conf")
             if (f.isFile) return f
             dir = dir.parentFile
         }
-        throw AssertionError("device profile .conf not found above ${System.getProperty("user.dir")}")
+        // This local research fixture is not committed to GitHub.
+        // Absence is not a product regression; CI must report SKIPPED,
+        // not FAIL or green by ignoring the entire upstream test suite.
+        return null
     }
 
     @Test
     fun `real document keeps the anchor`() {
         // A. the document as the app reads it
-        val confFile = locateConf()
+        val fixture = locateConf()
+        assumeTrue("optional external/port/$release.conf fixture is absent", fixture != null)
+        val confFile = requireNotNull(fixture)
         println("CONF: ${confFile.absolutePath}")
         val doc = HoconSupport.parseValue(confFile.readText()).asValueMap()
             ?: throw AssertionError("document did not parse to a map")

@@ -82,10 +82,9 @@ jobs:
           ANDROID_NDK_ROOT: ${{ runner.temp }}/ondk
         run: ./gradlew :app:testDebugUnitTest --tests com.sesame.app.ui.Mate50PreflightTest --no-daemon --stacktrace
 
-      # Upstream AnchorMergeProbeTest requires external/port/<release>.conf,
-      # a machine-local fixture absent from GitHub clean checkouts.
-      - name: Upstream JVM suite (informational; external fixture missing)
-        continue-on-error: true
+      # Optional local-only research fixtures use JUnit assumptions and are
+      # reported as skipped. All runnable tests must pass in CI.
+      - name: Full JVM unit test suite (required)
         env:
           ONDK_HOME: ${{ runner.temp }}/ondk
           ANDROID_NDK_HOME: ${{ runner.temp }}/ondk

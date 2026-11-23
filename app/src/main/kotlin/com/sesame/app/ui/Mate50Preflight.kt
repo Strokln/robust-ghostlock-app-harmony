@@ -20,8 +20,13 @@ internal object Mate50Preflight {
         kernelRelease: String,
         profilePresent: Boolean,
     ): Result? {
+        // Global ROMs often expose a retail model name instead of DCO-AL00.
+        val normalizedModel = model.filterNot(Char::isWhitespace)
+        val retailMate50 = normalizedModel.contains("Huawei", ignoreCase = true) &&
+            normalizedModel.contains("Mate50Pro", ignoreCase = true)
         val isMate50 = model.equals(TARGET_MODEL, ignoreCase = true) ||
-            device.equals(TARGET_DEVICE, ignoreCase = true)
+            device.equals(TARGET_DEVICE, ignoreCase = true) ||
+            retailMate50
         if (!isMate50) return null
 
         return Result(

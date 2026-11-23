@@ -45,6 +45,18 @@ class Mate50PreflightTest {
     }
 
     @Test
+    fun `retail model label is accepted without codename`() {
+        val result = Mate50Preflight.inspect(
+            model = "HUAWEI Mate 50 Pro",
+            device = "DCO",
+            buildDisplay = "DCO-AL00 4.2.0.225(C00E182)",
+            kernelRelease = "5.10.136-gfdd4fb7e74b6-dirty",
+            profilePresent = false,
+        )
+        assertTrue(result!!.sameBuildAsOfflineStudy)
+    }
+
+    @Test
     fun `unrelated phone has no Huawei panel`() {
         val result = Mate50Preflight.inspect(
             model = "Pixel 8",

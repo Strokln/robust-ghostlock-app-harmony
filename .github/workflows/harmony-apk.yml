@@ -6,6 +6,7 @@ on:
     branches:
       - document
       - ci/harmony-apk
+      - 'feat/**'
     paths:
       - '.github/workflows/harmony-apk.yml'
       - 'app/**'
@@ -72,6 +73,13 @@ jobs:
 
       - name: Install ONDK Rust toolchain
         run: rustup toolchain link ondk '${{ runner.temp }}/ondk/toolchains/rust'
+
+      - name: Run JVM unit tests
+        env:
+          ONDK_HOME: ${{ runner.temp }}/ondk
+          ANDROID_NDK_HOME: ${{ runner.temp }}/ondk
+          ANDROID_NDK_ROOT: ${{ runner.temp }}/ondk
+        run: ./gradlew :app:testDebugUnitTest --no-daemon --stacktrace
 
       - name: Build APK (debug signing; no signing secrets)
         env:

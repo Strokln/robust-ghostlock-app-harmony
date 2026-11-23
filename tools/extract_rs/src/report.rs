@@ -596,6 +596,33 @@ pub fn render_conf_with_device(input: &ConfInputs<'_>, device: Option<&str>) -> 
         fact_sources.insert(0, format!("device={name}"));
     }
     lines.insert(1, format!("# fact_sources: {}", fact_sources.join("; ")));
+    // A source-labelled template is not the same as an on-device measurement.
+    // Surface unresolved inputs in the export itself, without changing the
+    // schema or silently inventing kernel-specific parameters.
+    let mut unresolved: Vec<&str> = Vec::new();
+    if input.phys.is_none() {
+        unresolved.push("kernel_phys_load");
+    }
+    if input.phys_offset.is_none() {
+        unresolved.push("kernel_phys_offset");
+    }
+    if input.cred.iter().any(|(_, value)| value.trim() == "null") {
+        unresolved.push("cred_unresolved");
+    }
+    if input.layouts.as_ref().is_some_and(|layouts| {
+        matches!(layouts.waiter_compact.source, Source::ReleaseTemplate)
+    }) {
+        unresolved.push("waiter_shape_release_template_only");
+    }
+    if !unresolved.is_empty() {
+        lines.insert(
+            1,
+            format!(
+                "# profile_readiness: INCOMPLETE; unresolved={}; NOT VERIFIED FOR ROOT",
+                unresolved.join(",")
+            ),
+        );
+    }
     if !input.pipeline_order.is_empty() {
         let list = input
             .pipeline_order
@@ -921,6 +948,8 @@ mod tests {
         });
         assert!(!out.contains("include"));
         assert!(out.contains("kernel_phys_load = 1073741824"));
+        assert!(out.contains("# profile_readiness: INCOMPLETE; unresolved=kernel_phys_offset"));
+        assert!(out.contains("NOT VERIFIED FOR ROOT"));
         assert!(out.contains("route {\n  select_stack {\n    waiter_shift = -2\n  }\n}"));
         assert!(out.contains("collisions = 4"));
         assert!(!out.contains("mm_struct_sz"));

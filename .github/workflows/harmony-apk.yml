@@ -42,6 +42,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: DCO profile evidence reconciliation tests
+        run: |
+          python3 -m unittest discover -s tools/kernel_layout -p 'test_mate50_reconcile_profile.py' -v
+          python3 -m py_compile tools/kernel_layout/mate50_reconcile_profile.py
+
       - name: Offline Mate50 kallsyms syntax and fail-closed tests
         run: |
           python3 -m unittest discover -s tools/kernel_layout -p 'test_mate50_kallsyms_extract.py' -v
@@ -83,6 +88,9 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-linux-android
+
+      - name: Rust extractor profile-rendering tests
+        run: cargo test --manifest-path tools/extract_rs/Cargo.toml --lib report::tests --locked
 
       - name: Gradle setup
         uses: gradle/actions/setup-gradle@v6

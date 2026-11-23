@@ -50,6 +50,11 @@ jobs:
       - name: Offline P50-to-Mate50 compatibility gate tests
         run: python3 -m unittest discover -s tools/kernel_layout -p 'test_p50_mate50_gate.py' -v
 
+      - name: ARM64 perf ABI probe compile-time and shell checks
+        run: |
+          clang --target=aarch64-linux-android31 -fsyntax-only -ffreestanding -nostdlib tools/kernel_layout/mate50_perf_event_probe.c
+          bash -n tools/kernel_layout/build_mate50_perf_probe.sh
+
       - name: JDK 21
         uses: actions/setup-java@v6
         with:

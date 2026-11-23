@@ -74,7 +74,8 @@ def main():
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--report", type=Path, required=True)
     args = ap.parse_args()
-    boot_hash = hashlib.file_digest(args.boot.open("rb"), "sha256").hexdigest()
+    with args.boot.open("rb") as boot_file:
+        boot_hash = hashlib.file_digest(boot_file, "sha256").hexdigest()
     result, report = reconcile(args.profile.read_text(encoding="utf-8"), boot_hash)
     args.out.write_text(result, encoding="utf-8")
     args.report.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")

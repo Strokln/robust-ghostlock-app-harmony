@@ -82,6 +82,19 @@ namespace ghostlock::memory {
             errno = EINVAL;
             return -1;
         }
+        /* DCO-AL00 / HarmonyOS 4.2: the shipped boot image has
+         * memstart_addr = ~0ULL at link time, and the UEFI 0xA8000000
+         * reservation describes where Image MAY be placed, not PHYS_OFFSET.
+         * Refuse the target-specific profile until its DRAM base has been
+         * independently verified. Other Qualcomm releases retain their
+         * existing backwards-compatible defaults. */
+        if (family == SocFamily::Qcom &&
+            std::string_view(values->uname_r) ==
+                "5.10.136-gfdd4fb7e74b6-dirty" &&
+            !values->misc.kernel_phys_offset.has_value()) {
+            errno = EINVAL;
+            return -1;
+        }
         *this = ResolvedAddresses{};
         soc = family;
         const auto image = target::KernelAddress<target::ImageAddressDomain>(kernel::KIMAGE_TEXT_BASE)

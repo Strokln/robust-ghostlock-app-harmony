@@ -42,6 +42,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Native DCO physical-address guard regression
+        run: |
+          make -C src ../build/host-test/address_space_test
+          ./build/host-test/address_space_test
+
       - name: DCO profile evidence reconciliation tests
         run: |
           python3 -m unittest discover -s tools/kernel_layout -p 'test_mate50_reconcile_profile.py' -v

@@ -9,6 +9,7 @@ on:
       - 'feat/**'
       - 'fix/**'
       - 'tools/**'
+      - 'research/**'
     paths:
       - '.github/workflows/harmony-apk.yml'
       - 'app/**'
